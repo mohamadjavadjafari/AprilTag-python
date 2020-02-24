@@ -1,0 +1,22 @@
+<launch>
+    <arg name="video_device" default="/dev/video0"/>
+
+    <node name="usb_cam" pkg="usb_cam" type="usb_cam_node" output="screen">
+        <param name="video_device" value="$(arg video_device)" />
+        <param name="image_width" value="640" />
+        <param name="image_height" value="480" />
+        <param name="pixel_format" value="yuyv" />
+        <param name="camera_frame_id" value="usb_cam" />
+        <param name="io_method" value="mmap"/>
+    </node>
+
+    <node name="apriltag_detector" pkg="apriltag_python" type="apriltag_detector.py">
+        <remap from="image" to="/usb_cam/image_raw" />
+    </node>
+
+    <node name="vision_aggregator" pkg="amrl_vision_aggregator" type="vision_aggregator_node">
+        <remap from="image" to="/usb_cam/image_raw" />
+    </node>
+
+    <node name="image_view" pkg="rqt_image_view" type="rqt_image_view" />
+</launch>
